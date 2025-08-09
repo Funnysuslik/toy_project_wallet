@@ -80,32 +80,3 @@ toy_project_wallet/
 ├── run_dev.py
 └── README.md
 ```
-
-## Environment Variables
-
-The application requires the following environment variables in `backend/.env`:
-
-```env
-# Database settings
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=password
-DB_NAME=wallet_db
-
-# API settings
-API_V1_STR=/api/v1
-
-# Frontend settings
-FRONTEND_HOST=http://localhost:5173
-```
-
-## Development
-
-The application uses:
-- **FastAPI** for the web framework
-- **Pydantic** for data validation
-- **Pydantic Settings** for configuration management
-- **Uvicorn** as the ASGI server
-
-The application is set up with hot reload for development, so any changes to the code will automatically restart the server.
