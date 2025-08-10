@@ -19,9 +19,9 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
   count = session.exec(count_query).one()
 
   query = select(User).offset(skip).limit(limit)
-  users = session.exec
+  users = session.exec(query).all()
 
-  return UsersPublic(users, count=count)
+  return UsersPublic(data=users, count=count)
 
 @users_router.post(
   '/',
