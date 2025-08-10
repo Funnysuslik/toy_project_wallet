@@ -57,7 +57,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "app"
 
     @property
-    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+    def DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
             scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
