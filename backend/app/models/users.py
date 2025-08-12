@@ -4,6 +4,11 @@ from pydantic import EmailStr
 from sqlmodel import SQLModel, Field # , Relationship
 
 
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+class TokenPayload(SQLModel):
+    sub: str | None = None
 class UserBase(SQLModel):
   name: str | None = Field(default=None, max_length=50)
   email: EmailStr = Field(unique=True, index=True, max_length=255)
