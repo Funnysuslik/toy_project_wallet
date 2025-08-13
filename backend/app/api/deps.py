@@ -14,9 +14,6 @@ from app.models.users import TokenPayload, User
 
 
 def get_token_from_cookie(request: Request) -> str:
-    """
-    Извлекает JWT токен из куки 'access_token'
-    """
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(

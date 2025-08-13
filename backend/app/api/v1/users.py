@@ -47,9 +47,6 @@ def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response
 ) -> Token:
-    """
-    OAuth2 compatible token login, get an access token for future requests
-    """
     user = authenticate(
         session=session, email=form_data.username, password=form_data.password
     )
@@ -75,15 +72,9 @@ def login_access_token(
 
 @users_router.post("/login/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
-    """
-    Test access token
-    """
     return current_user
 
 @users_router.post("/logout")
 def logout(response: Response) -> dict:
-    """
-    Выход из системы - очищает куки с токеном
-    """
     response.delete_cookie("access_token", secure=False, httponly=True, samesite='lax')
     return {"message": "Successfully logged out"}
