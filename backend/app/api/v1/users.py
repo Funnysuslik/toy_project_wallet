@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import func, select
 
@@ -45,7 +45,7 @@ def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
 
 @users_router.post("/login/access-token")
 def login_access_token(
-    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response
 ) -> Token:
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -59,11 +59,18 @@ def login_access_token(
     # elif not user.is_active:
     #     raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return Token(
-        access_token=security.create_access_token(
-            user.id, expires_delta=access_token_expires
-        )
+    access_token = security.create_jwt_token(user.id, expires_delta=access_token_expires)
+
+    response.set_cookie(
+        'access_token', 
+        access_token,
+        httponly=True,
+        secure=False,  # False для разработки (HTTP), True для продакшена (HTTPS)
+        samesite='lax',
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
+    
+    return Token(access_token=access_token)
 
 
 @users_router.post("/login/test-token", response_model=UserPublic)
@@ -72,3 +79,11 @@ def test_token(current_user: CurrentUser) -> Any:
     Test access token
     """
     return current_user
+
+@users_router.post("/logout")
+def logout(response: Response) -> dict:
+    """
+    Выход из системы - очищает куки с токеном
+    """
+    response.delete_cookie("access_token", secure=False, httponly=True, samesite='lax')
+    return {"message": "Successfully logged out"}
