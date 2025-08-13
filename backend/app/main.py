@@ -20,13 +20,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/health")
 def read_root():
     return {"message": "Backend is running"}
 
+
 @app.get("/")
-def read_root():
+def health_check():
     return {"message": "Welcome to Wallet API"}
+
 
 if __name__ == "__main__":
     import uvicorn

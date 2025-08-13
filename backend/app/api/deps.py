@@ -28,8 +28,10 @@ def get_db() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
 
+
 SessionDep = Annotated[Session, Depends(get_db)]
 TokenDep = Annotated[str, Depends(get_token_from_cookie)]
+
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
@@ -50,7 +52,9 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
     #     raise HTTPException(status_code=400, detail="Inactive user")
     return user
 
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
