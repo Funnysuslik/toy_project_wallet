@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic import EmailStr
+from pydantic import EmailStr, model_validator
 from sqlmodel import SQLModel, Field  # , Relationship
 
 
@@ -32,6 +32,12 @@ class UsersPublic(SQLModel):
 class UserCreate(UserBase):
   password: str = Field(min_length=8, max_length=40)
   password_check: str
+
+  @model_validator(mode='after')
+  def check_passwords_match(self):
+    if self.password != self.password_check:
+      raise ValueError('passwords do not match')
+    return self
 
 
 class User(UserBase, table=True):
