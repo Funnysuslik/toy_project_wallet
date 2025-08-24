@@ -9,6 +9,7 @@ from alembic import context
 from app.core.settings import settings
 import app.models.users
 import app.models.wallets
+import app.models.transactions
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
