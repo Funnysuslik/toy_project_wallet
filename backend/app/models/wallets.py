@@ -10,10 +10,6 @@ class WalletBase(SQLModel):
       nullable=False,
     )
   )
-  balance: float = Field(
-    default=0.0,
-    nullable=False
-  )
   currency: str = Field(
     default='USD',
     nullable=False
@@ -34,5 +30,5 @@ class WalletsPublic(SQLModel):
 
 
 class Wallet(WalletBase, table=True):
-  id: int | None = Field(default=None, primary_key=True)
+  id: int | None = Field(default=1, primary_key=True)
   user_id: uuid.UUID = Field(nullable=False, foreign_key="user.id")
