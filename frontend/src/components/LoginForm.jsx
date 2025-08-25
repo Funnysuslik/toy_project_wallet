@@ -1,0 +1,74 @@
+import { useState } from 'react'
+import './AuthForms.css'
+
+export default function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  async function handleSubmit(e) {
+    e.preventDefault()
+
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Login failed")
+      }
+
+      setError("")
+      console.log("Login successful")
+    } catch (error) {
+      setError("Invalid email or password")
+    }
+  }
+
+
+  return (
+    <section className="login_wrapper">
+      <div className="login_form">
+        <h1 className="login_heading">Log in to your account</h1>
+        <form className="form" aria-label="Log in form" onSubmit={handleSubmit}>
+          <label className="form__label">
+            <span>E-mail</span>
+            <input
+              type="email"
+              name="email"
+              className="form__input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
+          <label className="form__label">
+            <span>Password</span>
+            <input
+              type="password"
+              name="password"
+              className="form__input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </label>
+          <button type="submit" className="form__submit">
+            Log In
+          </button>
+          {error && (
+            <p className="form__error" role="alert">
+              {error}
+            </p>
+          )}
+        </form>
+      </div>
+    </section>
+  );
+}
