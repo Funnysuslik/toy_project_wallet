@@ -1,7 +1,7 @@
 import uuid
 
 from pydantic import EmailStr, model_validator, SecretStr
-from sqlmodel import SQLModel, Field  # , Relationship
+from sqlmodel import Relationship, SQLModel, Field
 
 
 class Token(SQLModel):
@@ -16,8 +16,8 @@ class TokenPayload(SQLModel):
 class UserBase(SQLModel):
   name: str | None = Field(default=None, max_length=50)
   email: EmailStr = Field(unique=True, index=True, max_length=255)
-  is_active: bool = Field(default=False)
-  is_superuser: bool = Field(default=False)
+  is_active: bool | None = Field(default=False)
+  is_superuser: bool | None = Field(default=False)
 
 
 class UserPublic(UserBase):
@@ -30,8 +30,8 @@ class UsersPublic(SQLModel):
 
 
 class UserCreate(UserBase):
-  password: SecretStr = Field(min_length=8, max_length=40)
-  password_check: SecretStr
+  password: str = Field(min_length=8, max_length=40)
+  password_check: str
 
   @model_validator(mode='after')
   def check_passwords_match(self):
@@ -43,4 +43,5 @@ class UserCreate(UserBase):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    # wallets: list["Wallet"] = Relationship(back_populates="owner", cascade_delete=True)
+
+    wallets: list["Wallet"] = Relationship(back_populates="user", cascade_delete=True)
