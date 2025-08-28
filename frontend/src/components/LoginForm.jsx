@@ -1,21 +1,28 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import './AuthForms.css'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const navigate = useNavigate()
+
   async function handleSubmit(e) {
     e.preventDefault()
 
+    const formData = new URLSearchParams()
+    formData.append('username', email)
+    formData.append('password', password)
+
     try {
-      const response = await fetch("http://localhost:8000/login", {
+      const response = await fetch("http://localhost:8000/api/v1/users/login/access-token", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: formData.toString(),
       })
 
       if (!response.ok) {
@@ -24,11 +31,11 @@ export default function LoginForm() {
 
       setError("")
       console.log("Login successful")
-    } catch (error) {
+      navigate("/welcome")
+    } catch (err) {
       setError("Invalid email or password")
     }
   }
-
 
   return (
     <section className="login_wrapper">
@@ -70,5 +77,5 @@ export default function LoginForm() {
         </form>
       </div>
     </section>
-  );
+  )
 }
