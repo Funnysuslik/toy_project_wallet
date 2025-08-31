@@ -4,14 +4,14 @@ from app.core.security import get_password_hash, verify_password
 from app.models.users import User, UserCreate
 
 
-def create_user(*, session: Session, user_create: UserCreate) -> User:
-    user = User.model_validate(
-        user_create, update={"hashed_password": get_password_hash(user_create.password)}
+def create_user(*, session: Session, user: UserCreate) -> User:
+    new_user = User.model_validate(
+        user, update={"hashed_password": get_password_hash(user.password)}
     )
-    session.add(user)
+    session.add(new_user)
     session.commit()
-    session.refresh(user)
-    return user
+    session.refresh(new_user)
+    return new_user
 
 
 def get_user_by_email(*, session: Session, email: str) -> User | None:

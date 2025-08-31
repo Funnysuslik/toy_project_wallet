@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
+
+from app.models.categories import TransactionsCategoriesLink
 
 
 class BaseTransaction(SQLModel):
@@ -13,6 +15,7 @@ class TransactionCreate(BaseTransaction):
 
 
 class TransactionPub(BaseTransaction):
+  id: int
   date: datetime
 
 
@@ -22,6 +25,11 @@ class TransactionsPub(SQLModel):
 
 
 class Transaction(BaseTransaction, table=True):
-  id: int | None = Field(default=1, primary_key=True)
+  id: int = Field(default=1, primary_key=True)
   date: datetime = Field(nullable=False, default=datetime.now())
   wallet_id: int = Field(foreign_key='wallet.id', nullable=False)
+
+  categories: list["Category"] = Relationship(
+    back_populates='transactions',
+    link_model=TransactionsCategoriesLink
+  )

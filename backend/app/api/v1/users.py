@@ -77,10 +77,12 @@ def login_access_token(
 
 @users_router.post("/login/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
+
     return current_user
 
 
 @users_router.post("/logout")
 def logout(response: Response) -> dict:
     response.delete_cookie("access_token", secure=False, httponly=True, samesite='lax')
+
     return {"message": "Successfully logged out"}

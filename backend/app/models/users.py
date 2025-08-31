@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic import EmailStr, model_validator, SecretStr
+from pydantic import EmailStr, model_validator # , SecretStr
 from sqlmodel import Relationship, SQLModel, Field
 
 
@@ -37,6 +37,7 @@ class UserCreate(UserBase):
   def check_passwords_match(self):
     if self.password != self.password_check:
       raise ValueError('passwords do not match')
+
     return self
 
 

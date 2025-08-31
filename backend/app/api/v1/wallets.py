@@ -14,6 +14,7 @@ wallets_router = APIRouter(prefix='/wallets', tags=['wallets'])
   response_model=WalletsPublic
 )
 def get_all_user_wallet(session: SessionDep, user: CurrentUser) -> Any:
+
   return get_wallets_by_user(session=session, user=user)
 
 

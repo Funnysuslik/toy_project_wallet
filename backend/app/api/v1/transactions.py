@@ -15,6 +15,7 @@ transactions_router = APIRouter(prefix='/transactions', tags=['transactions'])
   response_model=TransactionsPub
 )
 def get_all_wallet_transactions(session: SessionDep, wallet_id: int) -> Any:
+
   return get_transactions_by_wallet(session=session, wallet_id=wallet_id)
 
 

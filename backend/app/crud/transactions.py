@@ -3,13 +3,13 @@ from sqlmodel import Session, select
 from app.models.transactions import Transaction, TransactionsPub, TransactionCreate
 from app.models.wallets import Wallet
 
-def create_transaction(*, session: Session, transaction_data: TransactionCreate) -> Transaction:
-  transaction = Transaction.model_validate(transaction_data)
-  session.add(transaction)
+def create_transaction(*, session: Session, transaction: TransactionCreate) -> Transaction:
+  new_transaction = Transaction.model_validate(transaction)
+  session.add(new_transaction)
   session.commit()
-  session.refresh(transaction)
+  session.refresh(new_transaction)
 
-  return transaction
+  return new_transaction
 
 
 def get_transactions_by_wallet(*, session: Session, wallet_id: Wallet.id) -> TransactionsPub:

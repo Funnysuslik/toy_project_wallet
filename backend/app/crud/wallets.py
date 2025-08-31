@@ -4,16 +4,16 @@ from app.models.wallets import Wallet, WalletCreate, WalletsPublic
 from app.models.users import User
 
 
-def create_wallet(*, session: Session, wallet_create_data: WalletCreate, user: User) -> Wallet:
-  wallet_data = wallet_create_data.model_dump()
+def create_wallet(*, session: Session, wallet: WalletCreate, user: User) -> Wallet:
+  wallet_data = wallet.model_dump()
   wallet_data['user_id'] = user.id
 
-  wallet = Wallet.model_validate(wallet_data)
-  session.add(wallet)
+  new_wallet = Wallet.model_validate(wallet_data)
+  session.add(new_wallet)
   session.commit()
-  session.refresh(wallet)
+  session.refresh(new_wallet)
 
-  return wallet
+  return new_wallet
 
 
 def get_wallets_by_user(*, session: Session, user: User) -> WalletsPublic:
