@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import func, select
 
 from app.models.users import Token, User, UserCreate, UserPublic, UsersPublic
-from app.api.deps import CurrentUser, SessionDep
+from app.api.deps import CurrentUser, SessionDep, is_superuser
 from app.crud.users import authenticate, get_user_by_email, create_user
 from app.core import security
 from app.core.settings import settings
@@ -17,7 +17,8 @@ users_router = APIRouter(prefix='/users', tags=['users'])
 
 @users_router.get(
   '/',
-  response_model=UsersPublic
+  response_model=UsersPublic,
+  dependencies=[is_superuser],
 )
 def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
   count_query = select(func.count()).select_from(User)

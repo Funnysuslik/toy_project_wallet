@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import APIRouter
 
-from app.api.deps import SessionDep
+from app.api.deps import SessionDep, is_superuser
 from app.crud.categories import create_category, get_all_categories
 from app.models.categories import Category, CategoryCreate, CategoriesPub
 
@@ -21,6 +21,7 @@ def categories(session: SessionDep) -> Any:
 @categories_router.post(
  '/' ,
  response_model=Category,
+ dependencies=[is_superuser],
 )
 def new_category(session: SessionDep, category: CategoryCreate) -> Any:
 
