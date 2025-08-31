@@ -24,6 +24,6 @@ def get_all_wallet_transactions(session: SessionDep, wallet_id: int) -> Any:
   response_model=TransactionPub
 )
 def create_transaction_endpiont(session: SessionDep, transaction: TransactionCreate) -> Any:
-  new_transaction = create_transaction(session=session, transaction_data=transaction)
+  new_transaction = create_transaction(session=session, transaction=transaction)
 
   return TransactionPub.model_validate(new_transaction)

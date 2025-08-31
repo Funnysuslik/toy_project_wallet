@@ -42,7 +42,7 @@ def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
       detail="The user with this email already exists in the system.",
     )
 
-  new_user = create_user(session=session, user_create=user)
+  new_user = create_user(session=session, user=user)
 
   return UserPublic.model_validate(new_user)
 

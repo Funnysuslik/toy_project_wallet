@@ -23,6 +23,6 @@ def get_all_user_wallet(session: SessionDep, user: CurrentUser) -> Any:
   response_model=WalletPublic
 )
 def create_wallet_endpoint(session: SessionDep, user: CurrentUser, wallet: WalletCreate) -> Any:
-  new_wallet = create_wallet(session=session, wallet_create_data=wallet, user=user)
+  new_wallet = create_wallet(session=session, wallet=wallet, user=user)
 
   return WalletPublic.model_validate(new_wallet)
