@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import APIRouter
 
-from app.models.transactions import TransactionCreate, TransactionPub, TransactionsPub
+from app.models.transactions import TransactionCreate, Transaction, TransactionsPub
 # from app.models.wallets import Wallet
 from app.api.deps import SessionDep
 from app.crud.transactions import get_transactions_by_wallet, create_transaction
@@ -21,9 +21,8 @@ def get_all_wallet_transactions(session: SessionDep, wallet_id: int) -> Any:
 
 @transactions_router.post(
   '/',
-  response_model=TransactionPub
-)
+  response_model=Transaction)
 def create_transaction_endpiont(session: SessionDep, transaction: TransactionCreate) -> Any:
   new_transaction = create_transaction(session=session, transaction=transaction)
 
-  return TransactionPub.model_validate(new_transaction)
+  return Transaction.model_validate(new_transaction)
