@@ -21,6 +21,7 @@ def get_token_from_cookie(request: Request) -> str:
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     return token
 
 
@@ -50,6 +51,7 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
     # commented til account activation will not be realised
     # if not user.is_active:
     #     raise HTTPException(status_code=400, detail="Inactive user")
+
     return user
 
 
@@ -61,6 +63,7 @@ def get_current_active_superuser(current_user: CurrentUser) -> User:
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )
+
     return current_user
 
 is_superuser = Depends(get_current_active_superuser)
