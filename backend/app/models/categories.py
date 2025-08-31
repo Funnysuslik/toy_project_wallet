@@ -1,4 +1,5 @@
 from pydantic_extra_types.color import Color
+from pydantic import field_validator
 from sqlmodel import Relationship, SQLModel, Field
 
 
@@ -9,12 +10,23 @@ class TransactionsCategoriesLink(SQLModel, table=True):
 
 class CategoryBase(SQLModel):
   name: str = Field(max_length=100, nullable=False)
-  color: str = Field(nullable=False)
+  color: str
 
 
 class CategoryCreate(CategoryBase):
-  color: Color
+  @field_validator('color', mode='before')
+  def validate_and_convert_color(cls, v):
+    if isinstance(v, Color):
 
+      return v.as_hex()
+    elif isinstance(v, str):
+      try:
+        c = Color(v)
+
+        return c.as_hex()
+      except Exception:
+        raise ValueError('Invalid color string')
+    raise ValueError('color must be a string or Color instance')
 
 class CategoryPub(CategoryBase):
   id: int
@@ -25,8 +37,7 @@ class CategoriesPub(SQLModel):
 
 
 class Category(CategoryBase, table=True):
-  id: int = Field(default=1, primary_key=True)
-  transaction_id: int 
+  id: int | None = Field(default=None, primary_key=True)
 
   transactions: list["Transaction"] = Relationship(
     back_populates='categories',

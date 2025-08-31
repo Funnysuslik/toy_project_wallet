@@ -31,7 +31,7 @@ class WalletsPublic(SQLModel):
 
 
 class Wallet(WalletBase, table=True):
-  id: int | None = Field(default=1, primary_key=True)
+  id: int | None = Field(default=None, primary_key=True)
   user_id: uuid.UUID = Field(nullable=False, foreign_key="user.id")
 
   user: "User" = Relationship(back_populates="wallets")

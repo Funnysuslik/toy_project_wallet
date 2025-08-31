@@ -17,6 +17,10 @@ class TransactionCreate(BaseTransaction):
 class TransactionPub(BaseTransaction):
   id: int
   date: datetime
+  category_ids: list[int]
+
+  class Config:
+      from_attributes = True
 
 
 class TransactionsPub(SQLModel):
@@ -25,7 +29,7 @@ class TransactionsPub(SQLModel):
 
 
 class Transaction(BaseTransaction, table=True):
-  id: int = Field(default=1, primary_key=True)
+  id: int | None = Field(default=None, primary_key=True)
   date: datetime = Field(nullable=False, default=datetime.now())
   wallet_id: int = Field(foreign_key='wallet.id', nullable=False)
 
@@ -33,3 +37,8 @@ class Transaction(BaseTransaction, table=True):
     back_populates='transactions',
     link_model=TransactionsCategoriesLink
   )
+
+  @property
+  def category_ids(self) -> list[int]:
+
+    return [c.id for c in self.categories]
