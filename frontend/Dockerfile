@@ -1,26 +1,25 @@
-# Build stage
+# Stage 1: Build
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Установка зависимостей
 COPY package*.json ./
 RUN npm install
 
-# Copy source code
+# Копируем исходники и билдим фронт
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Production stage
+# Stage 2: Prepare nginx content
 FROM nginx:alpine
 
-# Copy built files
+# Копируем собранный фронт в папку nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Исправляем права, чтобы nginx мог читать файлы
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
 
 EXPOSE 80
 
