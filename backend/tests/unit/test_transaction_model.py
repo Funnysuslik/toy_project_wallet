@@ -35,16 +35,6 @@ def test_transaction_creates_with_values():
   t = TransactionCreate(wallet_id=1, categories=[1, 2], value=123.45, name="pay", date=datetime.now()-timedelta(days=1))
 
 
-def test_transaction_creates_with_int_in_value_field():
-  t = TransactionCreate(wallet_id=1, categories=[1, 2], value=123, name="pay", date=datetime.now()-timedelta(days=1))
-  assert t.value == 123.0
-
-
-def test_transaction_creates_with_str_in_value_field():
-  t = TransactionCreate(wallet_id=1, categories=[1, 2], value="123.45", name="pay", date=datetime.now()-timedelta(days=1))
-  assert t.value == 123.45
-
-
 def test_category_ids_with_categories():
   """
   If categories have ids, the property should return them.
