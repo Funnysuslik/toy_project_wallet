@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.transactions import Transaction, TransactionsPub, TransactionCreate
+from app.models.transactions import Transaction, TransactionsPub, TransactionCreate, TransactionPub
 from app.models.wallets import Wallet
 from app.models.categories import Category
 
@@ -29,5 +29,17 @@ def get_transactions_by_wallet(*, session: Session, wallet_id: Wallet.id) -> Tra
   q = select(Transaction).where(Transaction.wallet_id == wallet_id)
   transactions = session.exec(q).all()
 
-  return TransactionsPub(data=transactions, count=len(transactions))
+  # Convert Transaction objects to TransactionPub objects
+  transaction_pubs = []
+  for transaction in transactions:
+    transaction_pub = TransactionPub(
+      id=transaction.id,
+      name=transaction.name,
+      value=transaction.value,
+      date=transaction.date,
+      categories=transaction.category_ids  # Use the property that returns list of ints
+    )
+    transaction_pubs.append(transaction_pub)
+
+  return TransactionsPub(data=transaction_pubs, count=len(transaction_pubs))
   

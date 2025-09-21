@@ -8,13 +8,9 @@ class WalletBase(SQLModel):
   type: str = Field(
     sa_column = Column(
       Enum('debit', 'credit', name='wallet_type_enum'),
-      nullable=False,
     )
   )
-  currency: str = Field(
-    default='USD',
-    nullable=False
-  )
+  currency: str = Field(default='USD')
 
 
 class WalletCreate(WalletBase):
@@ -32,6 +28,6 @@ class WalletsPublic(SQLModel):
 
 class Wallet(WalletBase, table=True):
   id: int | None = Field(default=None, primary_key=True)
-  user_id: uuid.UUID = Field(nullable=False, foreign_key="user.id")
+  user_id: uuid.UUID = Field(foreign_key="user.id")
 
   user: "User" = Relationship(back_populates="wallets")

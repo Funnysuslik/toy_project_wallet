@@ -9,8 +9,8 @@ class TransactionsCategoriesLink(SQLModel, table=True):
 
 
 class CategoryBase(SQLModel):
-  name: str = Field(max_length=100, nullable=False)
-  color: str
+  name: str = Field(max_length=100)
+  color: str = Field(unique=True)
 
 
 class CategoryCreate(CategoryBase):
