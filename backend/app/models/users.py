@@ -33,12 +33,12 @@ class UserCreate(UserBase):
   password: str = Field(min_length=8, max_length=40)
   password_check: str
 
-  @model_validator(mode='after')
-  def check_passwords_match(self):
-    if self.password != self.password_check:
+  @model_validator(mode='before')
+  def check_passwords_match(cls, values):
+    if values.get('password') != values.get('password_check'):
       raise ValueError('passwords do not match')
 
-    return self
+    return values
 
 
 class User(UserBase, table=True):
