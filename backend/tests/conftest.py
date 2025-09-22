@@ -1,18 +1,22 @@
 from pathlib import Path
 import sys
-import uuid
+import os
+import tempfile
 
 import pytest
 from faker import Faker
+from fastapi.testclient import TestClient
 from datetime import datetime
 from sqlmodel import create_engine, Session, SQLModel
 
 
 backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
-    sys.path.insert(0, str(backend_dir))
+  sys.path.insert(0, str(backend_dir))
 
 
+from app.main import app
+from app.api.deps import get_db
 from app.models.categories import Category
 from app.models.transactions import Transaction
 from app.models.wallets import Wallet
@@ -20,17 +24,39 @@ from app.models.users import User
 
 
 @pytest.fixture(scope="function")
-def session():
-  """Create a new in-memory DB for each test function"""
-  engine = create_engine("sqlite:///:memory:")
+def engine():
+  fd, path = tempfile.mkstemp(suffix=".db")
+  os.close(fd)
+  engine = create_engine(f"sqlite:///{path}", connect_args={"check_same_thread": False})
+  
   SQLModel.metadata.create_all(engine)
+  yield engine
+  engine.dispose()
+  os.remove(path)
+
+
+@pytest.fixture(scope="function")
+def session(engine):
   with Session(engine) as session:
     yield session
+
+@pytest.fixture(scope="function")
+def client(engine):
+  def _get_test_db():
+    with Session(engine) as s:
+      yield s
+
+  app.dependency_overrides[get_db] = _get_test_db
+
+  with TestClient(app) as c:
+    yield c
+
+  app.dependency_overrides.clear()
 
 
 @pytest.fixture(scope="session")
 def faker():
-    return Faker()
+  return Faker()
 
 
 @pytest.fixture
@@ -89,4 +115,4 @@ def transactions(session, wallet, categories):
 
 @pytest.fixture
 def now():
-    return datetime.now(datetime.timezone.utc)
+  return datetime.now(datetime.timezone.utc)
