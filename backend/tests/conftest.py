@@ -1,10 +1,11 @@
-import sys
-import os
 from pathlib import Path
+import sys
+import uuid
 
 import pytest
 from faker import Faker
 from datetime import datetime
+from sqlmodel import create_engine, Session, SQLModel
 
 
 backend_dir = Path(__file__).parent.parent
@@ -12,9 +13,78 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 
+from app.models.categories import Category
+from app.models.transactions import Transaction
+from app.models.wallets import Wallet
+from app.models.users import User
+
+
+@pytest.fixture(scope="function")
+def session():
+  """Create a new in-memory DB for each test function"""
+  engine = create_engine("sqlite:///:memory:")
+  SQLModel.metadata.create_all(engine)
+  with Session(engine) as session:
+    yield session
+
+
 @pytest.fixture(scope="session")
 def faker():
     return Faker()
+
+
+@pytest.fixture
+def user(session):
+  """Create a reusable user for tests"""
+  u = User(name="Test User", email="user@test.com", is_active=True, hashed_password="hashedpassword")
+  session.add(u)
+  session.commit()
+  session.refresh(u)
+  return u
+
+
+@pytest.fixture
+def admin(session):
+  """Create a reusable user for tests"""
+  u = User(name="Test User", email="user@test.com", is_active=True, is_superuser=True, hashed_password="hashedpassword")
+  session.add(u)
+  session.commit()
+  session.refresh(u)
+  return u
+
+
+@pytest.fixture
+def wallet(session, user):
+  """Create a reusable wallet for tests"""
+  w = Wallet(name="Test Wallet", user_id=user.id)
+  session.add(w)
+  session.commit()
+  session.refresh(w)
+  return w
+
+
+@pytest.fixture
+def categories(session):
+  """Create reusable categories for tests"""
+  c1 = Category(name="Food", color="FFFFFF")
+  c2 = Category(name="Rent", color="000000")
+  session.add_all([c1, c2])
+  session.commit()
+  session.refresh(c1)
+  session.refresh(c2)
+  return [c1, c2]
+
+
+@pytest.fixture
+def transactions(session, wallet, categories):
+  """Create reusable transactions for tests"""
+  t1 = Transaction(name="Test transaction 1", wallet_id=wallet.id, categories=categories)
+  t2 = Transaction(name="Test transaction 2", wallet_id=wallet.id, categories=[])
+  session.add_all([t1, t2])
+  session.commit()
+  session.refresh(t1)
+  session.refresh(t2)
+  return [t1, t2]
 
 
 @pytest.fixture
