@@ -16,7 +16,7 @@ if str(backend_dir) not in sys.path:
 
 
 from app.main import app
-from app.api.deps import get_db
+from app.api.deps import get_db, get_current_user
 from app.models.categories import Category
 from app.models.transactions import Transaction
 from app.models.wallets import Wallet
@@ -70,6 +70,16 @@ def user(session):
 
 
 @pytest.fixture
+def auth_client(client, user):
+  """Create reusable authorized client"""
+  app.dependency_overrides[get_current_user] = lambda: user
+  try:
+    yield client
+  finally:
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture
 def admin(session):
   """Create a reusable user for tests"""
   u = User(name="Test User", email="user@test.com", is_active=True, is_superuser=True, hashed_password="hashedpassword")
@@ -80,9 +90,19 @@ def admin(session):
 
 
 @pytest.fixture
+def super_auth_client(client, admin):
+  """Create reusable authorized as admin client"""
+  app.dependency_overrides[get_current_user] = lambda: admin
+  try:
+    yield client
+  finally:
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture
 def wallet(session, user):
   """Create a reusable wallet for tests"""
-  w = Wallet(name="Test Wallet", user_id=user.id)
+  w = Wallet(name="Test Wallet", type="debit", user_id=user.id)
   session.add(w)
   session.commit()
   session.refresh(w)
