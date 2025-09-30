@@ -16,7 +16,7 @@ categories_router = APIRouter(prefix='/categories', tags=['Categories'])
 )
 def categories(session: SessionDep) -> Any:
 
-  return get_all_categories(session)
+  return get_all_categories(session=session)
 
 
 @categories_router.post(

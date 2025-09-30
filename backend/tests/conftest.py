@@ -16,7 +16,7 @@ if str(backend_dir) not in sys.path:
 
 
 from app.main import app
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db, get_current_user, get_current_active_superuser
 from app.models.categories import Category
 from app.models.transactions import Transaction
 from app.models.wallets import Wallet
@@ -82,7 +82,7 @@ def auth_client(client, user):
 @pytest.fixture
 def admin(session):
   """Create a reusable user for tests"""
-  u = User(name="Test User", email="user@test.com", is_active=True, is_superuser=True, hashed_password="hashedpassword")
+  u = User(name="Test Admin", email="admin@test.com", is_active=True, is_superuser=True, hashed_password="hashedpassword")
   session.add(u)
   session.commit()
   session.refresh(u)
@@ -90,13 +90,13 @@ def admin(session):
 
 
 @pytest.fixture
-def super_auth_client(client, admin):
+def auth_admin_client(client, admin):
   """Create reusable authorized as admin client"""
-  app.dependency_overrides[get_current_user] = lambda: admin
+  app.dependency_overrides[get_current_active_superuser] = lambda: admin
   try:
     yield client
   finally:
-    app.dependency_overrides.pop(get_current_user, None)
+    app.dependency_overrides.pop(get_current_active_superuser, None)
 
 
 @pytest.fixture
@@ -112,8 +112,8 @@ def wallet(session, user):
 @pytest.fixture
 def categories(session):
   """Create reusable categories for tests"""
-  c1 = Category(name="Food", color="FFFFFF")
-  c2 = Category(name="Rent", color="000000")
+  c1 = Category(name="Food", color="#FFFFFF")
+  c2 = Category(name="Rent", color="#000")
   session.add_all([c1, c2])
   session.commit()
   session.refresh(c1)
