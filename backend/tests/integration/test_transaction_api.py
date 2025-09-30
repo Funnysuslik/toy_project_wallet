@@ -5,12 +5,12 @@ pytestmark = [pytest.mark.integration, pytest.mark.endpoints]
 
 
 def test_create_transaction_api(client, wallet):
-  tx_data = {"wallet_id": wallet.id, "name": "Groceries", "value": 100.0, "categories": []}
-  response = client.post("/api/v1/transactions/", json=tx_data)
+  post_body = {"wallet_id": wallet.id, "name": "Groceries", "value": 100.0, "categories": []}
+  response = client.post("/api/v1/transactions/", json=post_body)
   assert response.status_code == 200
 
   body = response.json()
-  assert body["name"] == tx_data["name"]
+  assert body["name"] == post_body["name"]
   assert body["wallet_id"] == wallet.id
   assert body["value"] == 100.0
 
