@@ -72,8 +72,8 @@ def login_access_token(
     return Token(access_token=access_token)
 
 
-@users_router.post("/login/test-token", response_model=UserPublic)
-def test_token(current_user: CurrentUser) -> Any:
+@users_router.post("/me", response_model=UserPublic)
+def get_current_user(current_user: CurrentUser) -> Any:
 
     return current_user
 
