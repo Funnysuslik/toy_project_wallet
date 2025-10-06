@@ -9,7 +9,7 @@ categories_router = APIRouter(prefix="/categories", tags=["Categories"])
 
 
 @categories_router.get(
-    "/",
+    "",
     response_model=CategoriesPub,
 )
 def categories(session: SessionDep) -> Any:
@@ -18,7 +18,7 @@ def categories(session: SessionDep) -> Any:
 
 
 @categories_router.post(
-    "/",
+    "",
     response_model=Category,
     dependencies=[is_superuser],
 )

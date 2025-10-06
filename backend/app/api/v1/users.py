@@ -14,7 +14,7 @@ users_router = APIRouter(prefix="/users", tags=["users"])
 
 
 @users_router.get(
-    "/",
+    "",
     response_model=UsersPublic,
     dependencies=[is_superuser],
 )
