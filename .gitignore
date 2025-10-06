@@ -216,3 +216,6 @@ dist-ssr/
 # vite
 .vscode/
 .vite/
+
+# warp
+WARP.md
