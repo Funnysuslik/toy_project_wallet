@@ -34,4 +34,3 @@ Once the application is running, you can access:
 - **Alternative API Documentation (ReDoc)**: http://localhost:8000/redoc
 - **Health Check**: http://localhost:8000/health
 - **Root Endpoint**: http://localhost:8000/
-

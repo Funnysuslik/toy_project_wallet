@@ -1,7 +1,7 @@
 import uuid
 
-from pydantic import EmailStr, model_validator # , SecretStr
-from sqlmodel import Relationship, SQLModel, Field
+from pydantic import EmailStr, model_validator  # , SecretStr
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class Token(SQLModel):
@@ -14,14 +14,14 @@ class TokenPayload(SQLModel):
 
 
 class UserBase(SQLModel):
-  name: str | None = Field(default=None, max_length=50)
-  email: EmailStr = Field(unique=True, index=True, max_length=255)
-  is_active: bool | None = Field(default=False)
-  is_superuser: bool | None = Field(default=False)
+    name: str | None = Field(default=None, max_length=50)
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    is_active: bool | None = Field(default=False)
+    is_superuser: bool | None = Field(default=False)
 
 
 class UserPublic(UserBase):
-  id: uuid.UUID
+    id: uuid.UUID
 
 
 class UsersPublic(SQLModel):
@@ -30,15 +30,15 @@ class UsersPublic(SQLModel):
 
 
 class UserCreate(UserBase):
-  password: str = Field(min_length=8, max_length=40)
-  password_check: str
+    password: str = Field(min_length=8, max_length=40)
+    password_check: str
 
-  @model_validator(mode='before')
-  def check_passwords_match(cls, values):
-    if values.get('password') != values.get('password_check'):
-      raise ValueError('passwords do not match')
+    @model_validator(mode="before")
+    def check_passwords_match(cls, values):
+        if values.get("password") != values.get("password_check"):
+            raise ValueError("passwords do not match")
 
-    return values
+        return values
 
 
 class User(UserBase, table=True):

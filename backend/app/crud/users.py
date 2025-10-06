@@ -1,13 +1,10 @@
-from sqlmodel import Session, select
-
 from app.core.security import get_password_hash, verify_password
 from app.models.users import User, UserCreate
+from sqlmodel import Session, select
 
 
 def create_user(*, session: Session, user: UserCreate) -> User:
-    new_user = User.model_validate(
-        user, update={"hashed_password": get_password_hash(user.password)}
-    )
+    new_user = User.model_validate(user, update={"hashed_password": get_password_hash(user.password)})
     session.add(new_user)
     session.commit()
     session.refresh(new_user)

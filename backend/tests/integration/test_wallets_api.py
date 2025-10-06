@@ -1,28 +1,26 @@
 import pytest
 
-
 pytestmark = [pytest.mark.integration, pytest.mark.endpoints]
 
 
 def test_get_all_user_wallets(auth_client, wallet):
-  response = auth_client.get("/api/v1/wallets/")
+    response = auth_client.get("/api/v1/wallets/")
 
-  body = response.json()
-  assert response.status_code == 200
-  assert body["count"] == 1
-  assert any(w["id"] == wallet.id for w in body["data"])
+    body = response.json()
+    assert response.status_code == 200
+    assert body["count"] == 1
+    assert any(w["id"] == wallet.id for w in body["data"])
 
 
 def test_create_wallet(auth_client):
-  post_body = {
-    "name": "Test New Wallet",
-    "type": "debit",
-    "currency": "USD",
-  }
-  response = auth_client.post("/api/v1/wallets/", json=post_body)
+    post_body = {
+        "name": "Test New Wallet",
+        "type": "debit",
+        "currency": "USD",
+    }
+    response = auth_client.post("/api/v1/wallets/", json=post_body)
 
-  body = response.json()
-  assert response.status_code == 200
-  assert body["name"] == "Test New Wallet"
-  assert "id" in body
-
+    body = response.json()
+    assert response.status_code == 200
+    assert body["name"] == "Test New Wallet"
+    assert "id" in body

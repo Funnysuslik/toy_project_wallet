@@ -2,15 +2,14 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
+from app.core import security
+from app.core.database import engine
+from app.core.settings import settings
+from app.models.users import TokenPayload, User
 from fastapi import Depends, HTTPException, Request, status
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
-
-from app.core import security
-from app.core.settings import settings
-from app.core.database import engine
-from app.models.users import TokenPayload, User
 
 
 def get_token_from_cookie(request: Request) -> str:
@@ -36,9 +35,7 @@ TokenDep = Annotated[str, Depends(get_token_from_cookie)]
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
         token_data = TokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
@@ -60,10 +57,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
-        raise HTTPException(
-            status_code=403, detail="The user doesn't have enough privileges"
-        )
+        raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
 
     return current_user
+
 
 is_superuser = Depends(get_current_active_superuser)
