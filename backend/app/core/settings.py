@@ -51,6 +51,11 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = "app"
 
+    REDIS_HOST: str = "redis"
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = "redis"
+    REDIS_DB: int = 0
+
     @property
     def DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
@@ -62,14 +67,14 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
-    SMTP_TLS: bool = True
-    SMTP_SSL: bool = False
-    SMTP_PORT: int = 587
-    SMTP_HOST: str | None = None
-    SMTP_USER: str | None = None
-    SMTP_PASSWORD: str | None = None
-    EMAILS_FROM_EMAIL: EmailStr | None = None
-    EMAILS_FROM_NAME: EmailStr | None = None
+    # SMTP_TLS: bool = True
+    # SMTP_SSL: bool = False
+    # SMTP_PORT: int = 587
+    # SMTP_HOST: str | None = None
+    # SMTP_USER: str | None = None
+    # SMTP_PASSWORD: str | None = None
+    # EMAILS_FROM_EMAIL: EmailStr | None = None
+    # EMAILS_FROM_NAME: EmailStr | None = None
 
     @model_validator(mode="after")
     def _set_default_emails_from(self) -> Self:
@@ -106,4 +111,4 @@ class Settings(BaseSettings):
         return self
 
 
-settings = Settings()  # type: ignore
+settings = Settings()

@@ -1,5 +1,18 @@
 services:
 
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   db:
     image: postgres:latest
     volumes:
@@ -28,6 +41,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     expose:
       - "8000"
 
@@ -54,6 +69,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
   static_value:
   media_value:
   frontend_build:
