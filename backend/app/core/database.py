@@ -7,5 +7,6 @@ engine = create_engine(str(settings.DATABASE_URI))
 
 
 def get_db() -> Generator[Session, None, None]:
+    """Get a database session."""
     with Session(engine) as session:
         yield session

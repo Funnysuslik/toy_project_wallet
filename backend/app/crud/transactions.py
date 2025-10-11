@@ -11,6 +11,7 @@ from sqlmodel import Session, select
 
 
 def create_transaction(*, session: Session, transaction: TransactionCreate) -> Transaction:
+    """Create a new transaction."""
     new_transaction = Transaction(**transaction.model_dump(exclude={"categories"}))
 
     if transaction.categories:
@@ -29,10 +30,10 @@ def create_transaction(*, session: Session, transaction: TransactionCreate) -> T
 
 
 def get_transactions_by_wallet(*, session: Session, wallet_id: Wallet.id) -> TransactionsPub:
+    """Get transactions by wallet."""
     q = select(Transaction).where(Transaction.wallet_id == wallet_id)
     transactions = session.exec(q).all()
 
-    # Convert Transaction objects to TransactionPub objects
     transaction_pubs = []
     for transaction in transactions:
         transaction_pub = TransactionPub(
@@ -40,7 +41,7 @@ def get_transactions_by_wallet(*, session: Session, wallet_id: Wallet.id) -> Tra
             name=transaction.name,
             value=transaction.value,
             date=transaction.date,
-            categories=transaction.category_ids,  # Use the property that returns list of ints
+            categories=transaction.category_ids,
         )
         transaction_pubs.append(transaction_pub)
 

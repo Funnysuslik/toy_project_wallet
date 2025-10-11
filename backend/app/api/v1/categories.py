@@ -14,6 +14,7 @@ categories_router = APIRouter(prefix="/categories", tags=["Categories"])
     response_model=CategoriesPub,
 )
 async def categories(session: SessionDep, redis_client: RedisDep) -> Any:
+    """Get all categories."""
     cache_key = "categories:all"
 
     # Try to get from cache first
@@ -36,6 +37,7 @@ async def categories(session: SessionDep, redis_client: RedisDep) -> Any:
     dependencies=[is_superuser],
 )
 async def new_category(session: SessionDep, redis_client: RedisDep, category: CategoryCreate) -> Any:
+    """Create a new category."""
     # Create the new category
     new_category = create_category(session=session, category=category)
 

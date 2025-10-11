@@ -19,6 +19,7 @@ users_router = APIRouter(prefix="/users", tags=["users"])
     dependencies=[is_superuser],
 )
 def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+    """Get all users."""
     count_query = select(func.count()).select_from(User)
     count = session.exec(count_query).one()
 
@@ -33,6 +34,7 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     response_model=UserPublic,
 )
 def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
+    """Create a new user."""
     new_user = get_user_by_email(session=session, email=user.email)
     if new_user:
         raise HTTPException(
@@ -51,6 +53,7 @@ def login_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     response: Response,
 ) -> Token:
+    """Login a user."""
     user = authenticate(session=session, email=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
@@ -74,12 +77,13 @@ def login_access_token(
 
 @users_router.post("/me", response_model=UserPublic)
 def get_current_user(current_user: CurrentUser) -> Any:
-
+    """Get the current user."""
     return current_user
 
 
 @users_router.post("/logout")
 def logout(response: Response) -> dict:
+    """Logout a current user."""
     response.delete_cookie("access_token", secure=False, httponly=True, samesite="lax")
 
     return {"message": "Successfully logged out"}

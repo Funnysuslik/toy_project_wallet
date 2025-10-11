@@ -5,15 +5,21 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 class Token(SQLModel):
+    """Token model."""
+
     access_token: str
     token_type: str = "bearer"
 
 
 class TokenPayload(SQLModel):
+    """Token payload model."""
+
     sub: str | None = None
 
 
 class UserBase(SQLModel):
+    """User base model."""
+
     name: str | None = Field(default=None, max_length=50)
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool | None = Field(default=False)
@@ -21,15 +27,21 @@ class UserBase(SQLModel):
 
 
 class UserPublic(UserBase):
+    """User public model."""
+
     id: uuid.UUID
 
 
 class UsersPublic(SQLModel):
+    """Users public model."""
+
     data: list[UserPublic]
     count: int
 
 
 class UserCreate(UserBase):
+    """User create model."""
+
     password: str = Field(min_length=8, max_length=40)
     password_check: str
 

@@ -21,6 +21,7 @@ ALGORITHM = "HS256"
 
 
 def create_jwt_token(subject: Union[str, Any], expires_delta: timedelta) -> str:
+    """Create a JWT token."""
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
@@ -28,8 +29,10 @@ def create_jwt_token(subject: Union[str, Any], expires_delta: timedelta) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password."""
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
+    """Get a password hash."""
     return pwd_context.hash(password)

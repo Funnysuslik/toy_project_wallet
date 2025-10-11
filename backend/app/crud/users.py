@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 
 
 def create_user(*, session: Session, user: UserCreate) -> User:
+    """Create a new user."""
     new_user = User.model_validate(user, update={"hashed_password": get_password_hash(user.password)})
     session.add(new_user)
     session.commit()
@@ -12,12 +13,14 @@ def create_user(*, session: Session, user: UserCreate) -> User:
 
 
 def get_user_by_email(*, session: Session, email: str) -> User | None:
+    """Get a user by email."""
     q = select(User).where(User.email == email)
     user = session.exec(q).first()
     return user
 
 
 def authenticate(*, session: Session, email: str, password: str) -> User | None:
+    """Authenticate a user."""
     user = get_user_by_email(session=session, email=email)
     if not user:
         return None

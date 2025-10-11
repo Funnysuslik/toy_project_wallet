@@ -15,6 +15,7 @@ from sqlmodel import Session
 
 
 def get_token_from_cookie(request: Request) -> str:
+    """Get a token from a cookie."""
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(
@@ -32,6 +33,7 @@ RedisDep = Annotated[redis.Redis, Depends(get_redis)]
 
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
+    """Get the current user."""
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
         token_data = TokenPayload(**payload)
@@ -54,6 +56,7 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 def get_current_active_superuser(current_user: CurrentUser) -> User:
+    """Detect if current active user is a superuser. Return current user if it is."""
     if not current_user.is_superuser:
         raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
 

@@ -103,10 +103,12 @@ def admin(session):
 @pytest.fixture
 def auth_admin_client(client, admin):
     """Create reusable authorized as admin client"""
+    app.dependency_overrides[get_current_user] = lambda: admin
     app.dependency_overrides[get_current_active_superuser] = lambda: admin
     try:
         yield client
     finally:
+        app.dependency_overrides.pop(get_current_user, None)
         app.dependency_overrides.pop(get_current_active_superuser, None)
 
 

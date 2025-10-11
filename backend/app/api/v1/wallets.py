@@ -10,12 +10,13 @@ wallets_router = APIRouter(prefix="/wallets", tags=["wallets"])
 
 @wallets_router.get("", response_model=WalletsPublic)
 def get_all_user_wallets(session: SessionDep, user: CurrentUser) -> Any:
-
+    """Get all current user wallets."""
     return get_wallets_by_user(session=session, user=user)
 
 
 @wallets_router.post("", response_model=WalletPublic)
 def create_wallet_endpoint(session: SessionDep, user: CurrentUser, wallet: WalletCreate) -> Any:
+    """Create a new wallet for current user."""
     new_wallet = create_wallet(session=session, wallet=wallet, user=user)
 
     return WalletPublic.model_validate(new_wallet)
