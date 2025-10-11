@@ -9,7 +9,7 @@ def test_create_user(client):
         "password": "testpassword",
         "password_check": "testpassword",
     }
-    response = client.post("/api/v1/users", json=post_body)
+    response = client.post("/api/v1/users/", json=post_body)
 
     assert response.status_code == 200
     body = response.json()

@@ -25,5 +25,6 @@ def test_get_transactions_by_wallet(client, wallet, transactions):
     response = client.get(f"/api/v1/transactions?wallet_id={wallet.id}")
 
     body = response.json()
+    print(body)
     assert body["count"] == len(transactions)
     assert sorted(t["name"] for t in body["data"]) == sorted(t.name for t in transactions)

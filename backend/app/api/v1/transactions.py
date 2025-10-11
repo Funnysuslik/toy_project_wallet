@@ -10,9 +10,9 @@ transactions_router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
 @transactions_router.get("", response_model=TransactionsPub)
-def get_all_wallet_transactions(session: SessionDep, wallet_id: int, variables: dict) -> Any:
+def get_all_wallet_transactions(session: SessionDep, wallet_id: int) -> Any:
     """Get all transactions by wallet."""
-    return get_transactions_by_wallet(session=session, wallet_id=wallet_id, variables=variables)
+    return get_transactions_by_wallet(session=session, wallet_id=wallet_id)
 
 
 @transactions_router.post("", response_model=Transaction)
