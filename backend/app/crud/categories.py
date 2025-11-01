@@ -1,7 +1,6 @@
+from app.core.redis import delete_cache, get_cache, set_cache
 from app.models.categories import CategoriesPub, Category, CategoryCreate
 from sqlmodel import Session, select
-
-from backend.app.core.redis import delete_cache, get_cache, set_cache
 
 
 async def get_all_categories(*, session: Session) -> CategoriesPub:

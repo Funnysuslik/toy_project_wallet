@@ -14,7 +14,7 @@ categories_router = APIRouter(prefix="/categories", tags=["Categories"])
 )
 async def categories(session: SessionDep) -> Any:
     """Get all categories."""
-    return get_all_categories(session=session)
+    return await get_all_categories(session=session)
 
 
 @categories_router.post(
@@ -24,4 +24,4 @@ async def categories(session: SessionDep) -> Any:
 )
 async def new_category(session: SessionDep, category: CategoryCreate) -> Any:
     """Create a new category."""
-    return create_category(session=session, category=category)
+    return await create_category(session=session, category=category)
