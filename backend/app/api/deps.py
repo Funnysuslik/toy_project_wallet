@@ -1,11 +1,8 @@
-from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-import redis.asyncio as redis
 from app.core import security
-from app.core.database import engine, get_db
-from app.core.redis import get_redis
+from app.core.database import get_db
 from app.core.settings import settings
 from app.models.users import TokenPayload, User
 from fastapi import Depends, HTTPException, Request, status
@@ -29,7 +26,6 @@ def get_token_from_cookie(request: Request) -> str:
 
 SessionDep = Annotated[Session, Depends(get_db)]
 TokenDep = Annotated[str, Depends(get_token_from_cookie)]
-RedisDep = Annotated[redis.Redis, Depends(get_redis)]
 
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:

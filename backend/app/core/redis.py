@@ -1,10 +1,11 @@
 import json
 import logging
 from collections.abc import Generator
-from typing import Any, Optional
+from typing import Annotated, Any, Optional
 
 import redis.asyncio as redis
 from app.core.settings import settings
+from fastapi import Depends
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,10 @@ async def get_redis() -> Generator[redis.Redis, None, None]:
         await client.aclose()
 
 
-async def get_cache(redis_client: redis.Redis, key: str) -> Optional[Any]:
+RedisDep = Annotated[redis.Redis, Depends(get_redis)]
+
+
+async def get_cache(redis_client: RedisDep, key: str) -> Optional[Any]:
     """Get cached data by key."""
     try:
         cached_data = await redis_client.get(key)
@@ -49,7 +53,7 @@ async def get_cache(redis_client: redis.Redis, key: str) -> Optional[Any]:
         return None
 
 
-async def set_cache(redis_client: redis.Redis, key: str, data: Any) -> bool:
+async def set_cache(redis_client: RedisDep, key: str, data: Any) -> bool:
     """Set cache data by key."""
     try:
         serialized_data = json.dumps(data, default=str)
@@ -60,7 +64,7 @@ async def set_cache(redis_client: redis.Redis, key: str, data: Any) -> bool:
         return False
 
 
-async def delete_cache(redis_client: redis.Redis, key: str) -> bool:
+async def delete_cache(redis_client: RedisDep, key: str) -> bool:
     """Delete cache data by key."""
     try:
         await redis_client.delete(key)
@@ -70,7 +74,7 @@ async def delete_cache(redis_client: redis.Redis, key: str) -> bool:
         return False
 
 
-async def delete_cache_pattern(redis_client: redis.Redis, pattern: str) -> bool:
+async def delete_cache_pattern(redis_client: RedisDep, pattern: str) -> bool:
     """Delete cache data by pattern."""
     try:
         keys = await redis_client.keys(pattern)
