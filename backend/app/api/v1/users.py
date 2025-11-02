@@ -1,12 +1,26 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
+from aiohttp import ClientSession
 from app.api.deps import CurrentUser, SessionDep, is_superuser
 from app.core import security
 from app.core.settings import settings
-from app.crud.users import authenticate, create_user, get_user_by_email
-from app.models.users import Token, User, UserCreate, UserPublic, UsersPublic
-from fastapi import APIRouter, Depends, HTTPException, Response
+from app.crud.users import (
+    authenticate,
+    create_user,
+    create_user_google,
+    get_user_by_email,
+    get_user_by_google_id,
+)
+from app.models.users import (
+    Token,
+    User,
+    UserCreate,
+    UserCreateGoogle,
+    UserPublic,
+    UsersPublic,
+)
+from fastapi import APIRouter, Body, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import func, select
 
@@ -75,6 +89,43 @@ async def login_access_token(
     )
 
     return Token(access_token=access_token)
+
+
+@users_router.post("/login/google/callback")
+async def google_callback(code: Annotated[str, Body(embed=True)], session: SessionDep):
+    """Google callback."""
+    async with ClientSession() as client_session:
+        async with client_session.post(
+            url="https://oauth2.googleapis.com/token",
+            data={
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+                "redirect_uri": f"{settings.FRONTEND_HOST}/welcome",
+            },
+        ) as response:
+            if not response.ok:
+                raise HTTPException(status_code=400, detail="Failed to get Google token")
+            data = await response.json()
+            access_token = data["access_token"]
+            user_info = await client_session.get(
+                url="https://www.googleapis.com/oauth2/v1/userinfo",
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+            if not user_info.ok:
+                raise HTTPException(status_code=400, detail="Failed to get Google user info")
+            user_info_data = await user_info.json()
+            google_id = user_info_data["id"]
+            user = await get_user_by_google_id(session=session, google_id=google_id)
+            if not user:
+                user = await create_user_google(
+                    session=session,
+                    user=UserCreateGoogle(
+                        google_id=google_id, email=user_info_data["email"], name=user_info_data["name"]
+                    ),
+                )
+            return user
 
 
 @users_router.post("/me", response_model=UserPublic)

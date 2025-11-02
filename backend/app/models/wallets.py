@@ -10,6 +10,8 @@ class WalletBase(SQLModel):
     type: str = Field(
         sa_column=Column(
             Enum("debit", "credit", name="wallet_type_enum"),
+            default="debit",
+            nullable=False,
         )
     )
     currency: str = Field(default="USD")

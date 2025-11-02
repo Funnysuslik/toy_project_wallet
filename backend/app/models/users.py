@@ -1,7 +1,8 @@
 import uuid
 
 from pydantic import EmailStr, model_validator  # , SecretStr
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import Enum
+from sqlmodel import Column, Field, Relationship, SQLModel
 
 
 class Token(SQLModel):
@@ -22,8 +23,13 @@ class UserBase(SQLModel):
 
     name: str | None = Field(default=None, max_length=50)
     email: EmailStr = Field(unique=True, index=True, max_length=255)
-    is_active: bool | None = Field(default=False)
-    is_superuser: bool | None = Field(default=False)
+    role: str = Field(
+        sa_column=Column(
+            Enum("user", "admin", "troll", name="user_role_enum"),
+            default="user",
+            nullable=False,
+        ),
+    )
 
 
 class UserPublic(UserBase):
@@ -53,8 +59,14 @@ class UserCreate(UserBase):
         return values
 
 
+class UserCreateGoogle(UserBase):
+    """User create google model."""
+
+    google_id: str = Field(unique=True, index=True, max_length=255)
+
+
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
+    hashed_password: str = Field(nullable=True)
 
     wallets: list["Wallet"] = Relationship(back_populates="user", cascade_delete=True)

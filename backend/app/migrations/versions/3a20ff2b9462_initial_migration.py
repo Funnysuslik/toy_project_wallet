@@ -1,8 +1,8 @@
-"""Reinit
+"""initial migration
 
-Revision ID: 3792054c706d
+Revision ID: 3a20ff2b9462
 Revises:
-Create Date: 2025-08-31 23:46:46.450425
+Create Date: 2025-11-03 00:47:35.091503
 
 """
 
@@ -13,7 +13,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "3792054c706d"
+revision: str = "3a20ff2b9462"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,15 +28,15 @@ def upgrade() -> None:
         sa.Column("color", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("color"),
     )
     op.create_table(
         "user",
         sa.Column("name", sqlmodel.sql.sqltypes.AutoString(length=50), nullable=True),
         sa.Column("email", sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
-        sa.Column("is_active", sa.Boolean(), nullable=True),
-        sa.Column("is_superuser", sa.Boolean(), nullable=True),
+        sa.Column("role", sa.Enum("user", "admin", "troll", name="user_role_enum"), nullable=False),
         sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column("hashed_password", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("hashed_password", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
@@ -57,8 +57,8 @@ def upgrade() -> None:
         "transaction",
         sa.Column("value", sa.Float(), nullable=False),
         sa.Column("name", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
-        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("date", sa.DateTime(), nullable=False),
+        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("wallet_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["wallet_id"],

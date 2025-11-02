@@ -1,5 +1,5 @@
 from app.core.security import get_password_hash, verify_password
-from app.models.users import User, UserCreate
+from app.models.users import User, UserCreate, UserCreateGoogle
 from sqlmodel import Session, select
 
 
@@ -12,9 +12,25 @@ async def create_user(*, session: Session, user: UserCreate) -> User:
     return new_user
 
 
+async def create_user_google(*, session: Session, user: UserCreateGoogle) -> User:
+    """Create a new user."""
+    new_user = User.model_validate(user, update={"hashed_password": None})
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
+    return new_user
+
+
 async def get_user_by_email(*, session: Session, email: str) -> User | None:
     """Get a user by email."""
     result = await session.execute(select(User).where(User.email == email))
+    user = result.scalars().first()
+    return user
+
+
+async def get_user_by_google_id(*, session: Session, google_id: str) -> User | None:
+    """Get a user by google id."""
+    result = await session.execute(select(User).where(User.google_id == google_id))
     user = result.scalars().first()
     return user
 
