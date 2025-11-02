@@ -1,7 +1,9 @@
 import pytest
 
+pytestmark = [pytest.mark.integration, pytest.mark.endpoints, pytest.mark.asyncio]
 
-def test_create_user(client):
+
+async def test_create_user(client):
     """Test creating a new user."""
     post_body = {
         "name": "Test User",
@@ -19,14 +21,14 @@ def test_create_user(client):
     assert fail_response.status_code >= 400
 
 
-def test_get_users_not_admin(auth_client):
+async def test_get_users_not_admin(auth_client):
     """Test getting users when not an admin."""
     response = auth_client.get("/api/v1/users")
 
     assert response.status_code >= 200
 
 
-def test_get_users_admin(auth_admin_client, user):
+async def test_get_users_admin(auth_admin_client, user):
     """Test getting users when an admin."""
     response = auth_admin_client.get("/api/v1/users")
 

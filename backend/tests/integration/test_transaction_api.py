@@ -1,9 +1,9 @@
 import pytest
 
-pytestmark = [pytest.mark.integration, pytest.mark.endpoints]
+pytestmark = [pytest.mark.integration, pytest.mark.endpoints, pytest.mark.asyncio]
 
 
-def test_create_transaction_api(client, wallet):
+async def test_create_transaction_api(client, wallet):
     """Test creating a transaction."""
     post_body = {
         "wallet_id": wallet.id,
@@ -20,7 +20,7 @@ def test_create_transaction_api(client, wallet):
     assert body["value"] == 100.0
 
 
-def test_get_transactions_by_wallet(client, wallet, transactions):
+async def test_get_transactions_by_wallet(client, wallet, transactions):
     """Test getting transactions by wallet."""
     response = client.get(f"/api/v1/transactions?wallet_id={wallet.id}")
 

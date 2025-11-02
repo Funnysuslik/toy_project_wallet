@@ -2,7 +2,7 @@ from typing import Annotated
 
 import jwt
 from app.core import security
-from app.core.database import get_db
+from app.core.database import get_session
 from app.core.settings import settings
 from app.models.users import TokenPayload, User
 from fastapi import Depends, HTTPException, Request, status
@@ -24,11 +24,11 @@ def get_token_from_cookie(request: Request) -> str:
     return token
 
 
-SessionDep = Annotated[Session, Depends(get_db)]
+SessionDep = Annotated[Session, Depends(get_session)]
 TokenDep = Annotated[str, Depends(get_token_from_cookie)]
 
 
-def get_current_user(session: SessionDep, token: TokenDep) -> User:
+async def get_current_user(session: SessionDep, token: TokenDep) -> User:
     """Get the current user."""
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
@@ -38,7 +38,7 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = session.get(User, token_data.sub)
+    user = await session.get(User, token_data.sub)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     # commented til account activation will not be realised

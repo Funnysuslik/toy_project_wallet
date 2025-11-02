@@ -1,9 +1,9 @@
 import pytest
 
-pytestmark = [pytest.mark.integration, pytest.mark.endpoints]
+pytestmark = [pytest.mark.integration, pytest.mark.endpoints, pytest.mark.asyncio]
 
 
-def test_get_all_categories(auth_client, categories):
+async def test_get_all_categories(auth_client, categories):
     """Test getting all categories."""
     response = auth_client.get("/api/v1/categories")
 
@@ -12,7 +12,7 @@ def test_get_all_categories(auth_client, categories):
     assert len(body["data"]) == 2
 
 
-def test_not_admin_create_category(auth_client):
+async def test_not_admin_create_category(auth_client):
     """Test creating a category when not an admin."""
     post_body = {
         "name": "Test Category",
@@ -23,7 +23,7 @@ def test_not_admin_create_category(auth_client):
     assert response.status_code >= 400
 
 
-def test_create_new_category(auth_admin_client):
+async def test_create_new_category(auth_admin_client):
     """Test creating a new category."""
     post_body = {
         "name": "Test Category",

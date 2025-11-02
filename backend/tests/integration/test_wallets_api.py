@@ -1,9 +1,9 @@
 import pytest
 
-pytestmark = [pytest.mark.integration, pytest.mark.endpoints]
+pytestmark = [pytest.mark.integration, pytest.mark.endpoints, pytest.mark.asyncio]
 
 
-def test_get_all_user_wallets(auth_client, wallet):
+async def test_get_all_user_wallets(auth_client, wallet):
     """Test getting all user wallets."""
     response = auth_client.get("/api/v1/wallets")
 
@@ -13,7 +13,7 @@ def test_get_all_user_wallets(auth_client, wallet):
     assert any(w["id"] == wallet.id for w in body["data"])
 
 
-def test_create_wallet(auth_client):
+async def test_create_wallet(auth_client):
     """Test creating a new wallet."""
     post_body = {
         "name": "Test New Wallet",

@@ -1,12 +1,11 @@
-from collections.abc import Generator
-
 from app.core.settings import settings
-from sqlmodel import Session, create_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-engine = create_engine(str(settings.DATABASE_URI))
+engine = create_async_engine(str(settings.DATABASE_URI))
+new_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
-def get_db() -> Generator[Session, None, None]:
+async def get_session():
     """Get a database session."""
-    with Session(engine) as session:
+    async with new_session() as session:
         yield session

@@ -9,7 +9,8 @@ async def get_all_categories(*, session: Session) -> CategoriesPub:
     if cached_data:
         return CategoriesPub(data=cached_data)
 
-    categories = session.exec(select(Category)).all()
+    categories = await session.execute(select(Category)).scalars().all()
+
     await set_cache(key="categories:all", data=categories)
     return CategoriesPub(data=categories)
 
@@ -18,8 +19,8 @@ async def create_category(*, session: Session, category: CategoryCreate) -> Cate
     """Create a new category."""
     new_category = Category.model_validate(category)
     session.add(new_category)
-    session.commit()
-    session.refresh(new_category)
+    await session.commit()
+    await session.refresh(new_category)
 
     await delete_cache(key="categories:all")
 

@@ -18,13 +18,15 @@ users_router = APIRouter(prefix="/users", tags=["users"])
     response_model=UsersPublic,
     dependencies=[is_superuser],
 )
-def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+async def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """Get all users."""
     count_query = select(func.count()).select_from(User)
-    count = session.exec(count_query).one()
+    count_result = await session.execute(count_query)
+    count = count_result.one()[0]
 
     query = select(User).offset(skip).limit(limit)
-    users = session.exec(query).all()
+    result = await session.execute(query)
+    users = result.scalars().all()
 
     return UsersPublic(data=users, count=count)
 
@@ -33,16 +35,16 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     "/",
     response_model=UserPublic,
 )
-def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
+async def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
     """Create a new user."""
-    new_user = get_user_by_email(session=session, email=user.email)
+    new_user = await get_user_by_email(session=session, email=user.email)
     if new_user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists in the system.",
         )
 
-    new_user = create_user(session=session, user=user)
+    new_user = await create_user(session=session, user=user)
 
     return UserPublic.model_validate(new_user)
 
