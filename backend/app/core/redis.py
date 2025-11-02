@@ -42,7 +42,7 @@ async def get_cache(key: str) -> Optional[Any]:
     """Get cached data by key."""
     try:
         async with redis_client() as client:
-            cached_data = await client.get(key)
+            cached_data = await client.get(name=key)
         if cached_data:
             return json.loads(cached_data)
         return None
@@ -56,7 +56,7 @@ async def set_cache(key: str, data: Any) -> bool:
     try:
         serialized_data = json.dumps(data, default=str)
         async with redis_client() as client:
-            await client.set(key, serialized_data)
+            await client.set(name=key, value=serialized_data)
 
         return True
     except Exception as e:
@@ -68,7 +68,7 @@ async def delete_cache(key: str) -> bool:
     """Delete cache data by key."""
     try:
         async with redis_client() as client:
-            await client.delete(key)
+            await client.delete(name=key)
 
         return True
     except Exception as e:
@@ -87,4 +87,17 @@ async def delete_cache_pattern(pattern: str) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Failed to delete cache for pattern {pattern}: {e}")
+        return False
+
+
+async def set_cache_for_time(key: str, data: Any, time: int) -> bool:
+    """Set cache data by key which will expire in **time."""
+    try:
+        serialized_data = json.dumps(data, default=str)
+        async with redis_client() as client:
+            await client.setex(name=key, value=serialized_data, time=time)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to set cache for key {key}: {e}")
         return False
