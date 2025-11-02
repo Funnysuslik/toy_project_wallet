@@ -9,7 +9,8 @@ async def get_all_categories(*, session: Session) -> CategoriesPub:
     if cached_data:
         return CategoriesPub(data=cached_data)
 
-    categories = await session.execute(select(Category)).scalars().all()
+    result = await session.execute(select(Category))
+    categories = result.scalars().all()
 
     await set_cache(key="categories:all", data=categories)
     return CategoriesPub(data=categories)

@@ -16,9 +16,8 @@ async def create_transaction(*, session: Session, transaction: TransactionCreate
     new_transaction = Transaction(**transaction.model_dump(exclude={"categories"}))
 
     if transaction.categories:
-        categories = (
-            await session.execute(select(Category).where(Category.id.in_(transaction.categories))).scalars().all()
-        )
+        result = await session.execute(select(Category).where(Category.id.in_(transaction.categories)))
+        categories = result.scalars().all()
 
         if len(categories) != len(transaction.categories):
             raise HTTPException(status_code=400, detail="Some categories not found")
@@ -35,7 +34,8 @@ async def create_transaction(*, session: Session, transaction: TransactionCreate
 async def get_transactions_by_wallet(*, session: Session, wallet_id: Wallet.id) -> TransactionsPub:
     """Get transactions by wallet."""
     query = select(Transaction).where(Transaction.wallet_id == wallet_id).options(selectinload(Transaction.categories))
-    transactions = await session.execute(q).scalars().all()
+    result = await session.execute(query)
+    transactions = result.scalars().all()
 
     transaction_pubs = []
     for transaction in transactions:

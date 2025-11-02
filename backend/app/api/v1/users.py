@@ -50,13 +50,13 @@ async def create_user_endpoint(session: SessionDep, user: UserCreate) -> Any:
 
 
 @users_router.post("/login/access-token")
-def login_access_token(
+async def login_access_token(
     session: SessionDep,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     response: Response,
 ) -> Token:
     """Login a user."""
-    user = authenticate(session=session, email=form_data.username, password=form_data.password)
+    user = await authenticate(session=session, email=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     # commented till account activation will not be implemented

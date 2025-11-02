@@ -14,8 +14,8 @@ async def create_user(*, session: Session, user: UserCreate) -> User:
 
 async def get_user_by_email(*, session: Session, email: str) -> User | None:
     """Get a user by email."""
-    user = await session.execute(select(User).where(User.email == email)).scalars().first()
-
+    result = await session.execute(select(User).where(User.email == email))
+    user = result.scalars().first()
     return user
 
 

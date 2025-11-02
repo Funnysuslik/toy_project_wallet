@@ -18,6 +18,7 @@ async def create_wallet(*, session: Session, wallet: WalletCreate, user: User) -
 
 async def get_wallets_by_user(*, session: Session, user: User) -> WalletsPublic:
     """Get wallets by user."""
-    wallets = await session.execute(select(Wallet).where(Wallet.user_id == user.id)).scalars().all()
+    result = await session.execute(select(Wallet).where(Wallet.user_id == user.id))
+    wallets = result.scalars().all()
 
     return WalletsPublic(data=wallets, count=len(wallets))
