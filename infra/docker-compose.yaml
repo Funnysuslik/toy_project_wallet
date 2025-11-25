@@ -35,6 +35,8 @@ services:
     restart: always
     env_file:
       - ../.env
+    environment:
+      POSTGRES_SERVER: db  # ensure container uses docker network host instead of localhost
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/

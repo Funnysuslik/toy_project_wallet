@@ -1,13 +1,16 @@
 import uuid
+from enum import Enum as PyEnum
 
 from pydantic import EmailStr, model_validator  # , SecretStr
-from sqlalchemy import Enum
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Column, Field, Relationship, SQLModel
 
-class UserRole(str, Enum):
+
+class UserRole(str, PyEnum):
     user = "user"
     admin = "admin"
     troll = "troll"
+
 
 class Token(SQLModel):
     """Token model."""
@@ -27,9 +30,15 @@ class UserBase(SQLModel):
 
     name: str | None = Field(default=None, max_length=50)
     email: EmailStr = Field(unique=True, index=True, max_length=255)
-    role: UserRole = Field(default=UserRole.user)
+    role: UserRole = Field(
+        default=UserRole.user,
+        sa_column=Column(
+            SAEnum(UserRole, name="user_role_enum"),
+            nullable=False,
+        ),
+    )
 
-    
+
 class UserPublic(UserBase):
     """User public model."""
 

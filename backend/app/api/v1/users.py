@@ -125,7 +125,20 @@ async def google_callback(code: Annotated[str, Body(embed=True)], session: Sessi
                         google_id=google_id, email=user_info_data["email"], name=user_info_data["name"]
                     ),
                 )
-            return user
+
+            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = security.create_jwt_token(user.id, expires_delta=access_token_expires)
+
+            response.set_cookie(
+                "access_token",
+                access_token,
+                httponly=True,
+                secure=False,  # False для разработки (HTTP), True для продакшена (HTTPS)
+                samesite="lax",
+                max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            )
+
+            return Token(access_token=access_token)
 
 
 @users_router.post("/me", response_model=UserPublic)
