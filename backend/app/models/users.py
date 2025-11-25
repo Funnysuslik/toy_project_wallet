@@ -4,6 +4,10 @@ from pydantic import EmailStr, model_validator  # , SecretStr
 from sqlalchemy import Enum
 from sqlmodel import Column, Field, Relationship, SQLModel
 
+class UserRole(str, Enum):
+    user = "user"
+    admin = "admin"
+    troll = "troll"
 
 class Token(SQLModel):
     """Token model."""
@@ -23,15 +27,9 @@ class UserBase(SQLModel):
 
     name: str | None = Field(default=None, max_length=50)
     email: EmailStr = Field(unique=True, index=True, max_length=255)
-    role: str = Field(
-        sa_column=Column(
-            Enum("user", "admin", "troll", name="user_role_enum"),
-            default="user",
-            nullable=False,
-        ),
-    )
+    role: UserRole = Field(default=UserRole.user)
 
-
+    
 class UserPublic(UserBase):
     """User public model."""
 
