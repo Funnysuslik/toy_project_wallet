@@ -3,15 +3,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
 }
 
 .signup_form,
 .login_form {
-  background-color: #1a1a1a;
+  background-color: transparent;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
   width: 320px;
 }
 
@@ -19,7 +16,7 @@
 .login_heading {
   margin-bottom: 1.5rem;
   font-size: 2rem;
-  color: #ffffff;
+  color: var(--color-text);
 }
 
 .form__label {
@@ -27,37 +24,45 @@
   flex-direction: column;
   margin-bottom: 1rem;
   text-align: left;
-  color: #ccc;
+  color: var(--color-text-light);
 }
 
 .form__input {
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #2a2a2a;
-  color: #fff;
+  padding: 1rem;
+  background-color: transparent;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-input-text);
   margin-top: 0.3rem;
 }
-
 .form__input:focus {
-  outline: 2px solid #646cff;
-  border-color: #646cff;
+  outline: 1px solid var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .form__submit {
   width: 100%;
   margin-top: 1rem;
-  background-color: #646cff;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   font-weight: 600;
 }
 
+button.form__submit {
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+}
+
 .form__submit:hover {
-  background-color: #535bf2;
+  background-color: var(--color-primary-hover);
+}
+
+button.auth_toggle__btn {
+  color: var(--color-white);
 }
 
 .form__error {
-  color: #ff6b6b;
+  color: var(--color-error);
   margin-top: 0.5rem;
   font-size: 0.9rem;
 }
