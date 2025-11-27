@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import RegisterForm from '../components/RegisterForm'
 import LoginForm from '../components/LoginForm'
+import './AuthPage.css'
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
