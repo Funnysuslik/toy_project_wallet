@@ -40,7 +40,7 @@ export default function LoginForm() {
   return (
     <section className="login_wrapper">
       <div className="login_form">
-        <h1 className="login_heading">Log in to your account</h1>
+        <h1 className="login_heading">Welcome!</h1>
         <form className="form" aria-label="Log in form" onSubmit={handleSubmit}>
           <label className="form__label">
             <span>E-mail</span>
@@ -68,6 +68,9 @@ export default function LoginForm() {
           </label>
           <button type="submit" className="form__submit">
             Log In
+          </button>
+          <button type="button" className="google_btn">
+            Continue with Google
           </button>
           {error && (
             <p className="form__error" role="alert">

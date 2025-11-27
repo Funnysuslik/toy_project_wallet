@@ -101,6 +101,9 @@ export default function RegisterForm() {
           <button type="submit" className="form__submit">
             Sign Up
           </button>
+          <button type="button" className="google_btn">
+            Continue with Google
+          </button>
           {error && (
             <p className="form__error" role="alert">
               {error}
