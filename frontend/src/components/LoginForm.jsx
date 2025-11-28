@@ -30,11 +30,25 @@ export default function LoginForm() {
       }
 
       setError("")
-      console.log("Login successful")
       navigate("/welcome")
     } catch (err) {
       setError("Invalid email or password")
     }
+  }
+
+  function handleGoogleLogin() {
+    const redirectUri = `${window.location.origin}/api/v1/users/google/callback`
+
+    const googleUrl =
+      `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=797302245130-52rns8fdfr66p2flan3id62p59c8v362.apps.googleusercontent.com` +
+      `&redirect_uri=${redirectUri}` +
+      `&response_type=code` +
+      `&scope=openid%20email%20profile` +
+      `&prompt=select_account` +
+      `&access_type=offline`
+
+    window.location.href = googleUrl
   }
 
   return (
@@ -66,12 +80,15 @@ export default function LoginForm() {
               required
             />
           </label>
+
           <button type="submit" className="form__submit">
             Log In
           </button>
-          <button type="button" className="google_btn">
+
+          <button type="button" className="google_btn" onClick={handleGoogleLogin}>
             Continue with Google
           </button>
+
           {error && (
             <p className="form__error" role="alert">
               {error}
