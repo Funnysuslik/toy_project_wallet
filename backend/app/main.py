@@ -3,7 +3,11 @@ from app.core.settings import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title=settings.PROJECT_NAME, version="1.0.0")
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version="1.0.0",
+    openapi_version="3.1.0"
+)
 
 app.include_router(main_router)
 
