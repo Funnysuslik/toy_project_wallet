@@ -37,7 +37,7 @@ export default function LoginForm() {
   }
 
   function handleGoogleLogin() {
-    const redirectUri = `${window.location.origin}/api/v1/users/google/callback`
+    const redirectUri = `${window.location.origin}/api/v1/users/login/google/callback`
 
     const googleUrl =
       `https://accounts.google.com/o/oauth2/v2/auth?` +

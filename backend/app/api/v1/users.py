@@ -20,7 +20,8 @@ from app.models.users import (
     UserPublic,
     UsersPublic,
 )
-from fastapi import APIRouter, Body, Depends, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import func, select
 
@@ -91,9 +92,10 @@ async def login_access_token(
     return Token(access_token=access_token)
 
 
-@users_router.post("/login/google/callback")
-async def google_callback(code: Annotated[str, Body(embed=True)], session: SessionDep):
+@users_router.get("/login/google/callback")
+async def google_callback(request: Request, session: SessionDep, response: Response):
     """Google callback."""
+    code = request.query_params.get("code")
     async with ClientSession() as client_session:
         async with client_session.post(
             url="https://oauth2.googleapis.com/token",
@@ -102,12 +104,12 @@ async def google_callback(code: Annotated[str, Body(embed=True)], session: Sessi
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
                 "code": code,
                 "grant_type": "authorization_code",
-                "redirect_uri": f"{settings.FRONTEND_HOST}/welcome",
+                "redirect_uri": settings.GOOGLE_REDIRECT_URI,
             },
-        ) as response:
-            if not response.ok:
-                raise HTTPException(status_code=400, detail="Failed to get Google token")
-            data = await response.json()
+        ) as resp:
+            if not resp.ok:
+                raise HTTPException(status_code=400, detail=f"Failed to get Google token: {resp.text}, code: {code}")
+            data = await resp.json()
             access_token = data["access_token"]
             user_info = await client_session.get(
                 url="https://www.googleapis.com/oauth2/v1/userinfo",
@@ -138,7 +140,7 @@ async def google_callback(code: Annotated[str, Body(embed=True)], session: Sessi
                 max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
             )
 
-            return Token(access_token=access_token)
+            return RedirectResponse(url=settings.FRONTEND_HOST + "/welcome", status_code=302)
 
 
 @users_router.post("/me", response_model=UserPublic)
