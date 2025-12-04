@@ -24,8 +24,9 @@ export default function RegisterForm() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
-          full_name: name,
+          name: name,
           email,
           password,
           password_check: passwordCheck,
@@ -33,7 +34,7 @@ export default function RegisterForm() {
       })
 
       if (!response.ok) {
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
         throw new Error(data.detail || "Registration failed")
       }
 
@@ -54,7 +55,6 @@ export default function RegisterForm() {
             <span>Name</span>
             <input
               type="text"
-              name="name"
               className="form__input"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -66,7 +66,6 @@ export default function RegisterForm() {
             <span>E-mail</span>
             <input
               type="email"
-              name="email"
               className="form__input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +77,6 @@ export default function RegisterForm() {
             <span>Password</span>
             <input
               type="password"
-              name="password"
               className="form__input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -90,7 +88,6 @@ export default function RegisterForm() {
             <span>Confirm Password</span>
             <input
               type="password"
-              name="passwordCheck"
               className="form__input"
               value={passwordCheck}
               onChange={(e) => setPasswordCheck(e.target.value)}
@@ -101,14 +98,7 @@ export default function RegisterForm() {
           <button type="submit" className="form__submit">
             Sign Up
           </button>
-          <button type="button" className="google_btn">
-            Continue with Google
-          </button>
-          {error && (
-            <p className="form__error" role="alert">
-              {error}
-            </p>
-          )}
+          {error && <p className="form__error">{error}</p>}
         </form>
       </div>
     </section>

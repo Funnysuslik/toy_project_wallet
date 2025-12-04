@@ -21,6 +21,16 @@
   color: var(--color-primary);
 }
 
+.navbar__user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__user-name {
+  font-weight: 500;
+}
+
 .navbar__logout-btn {
   padding: 0.5rem 1rem;
   background-color: var(--color-primary);
